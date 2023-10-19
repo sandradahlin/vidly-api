@@ -1,0 +1,113 @@
+const express = require("express");
+const Genre = require("./models/Genre");
+const router = express.Router();
+
+const genres = [
+  { id: 1, name: "Action" },
+  { id: 2, name: "Drama" },
+  { id: 3, name: "Comedy" },
+];
+
+router.get("/", async (req, res) => {
+  // const genres = await Genre.find({name: "Drama"}) // filter by property
+  // const genres = await Genre.find() // find all
+  const genres = await Genre.find({ name: "Action" }).limit(10).sort({
+    name: 1,
+  }); // find based on query
+  //  .select({name:1, tags: 1}) //return only selected properties
+
+  // More complex queries
+  // ***** Comparison operators ***
+  // eq (equal)
+  // ne ( not equal)
+  // gt (greater than)
+  // gte ( greater than or equal to)
+  // lt (less than)
+  // lte ( less than or equal to)
+  // in
+  // in (not in)
+  //   const genres = await Genre
+  //   .find({ price: {$gt: 10} })
+  //   .find({ price: {$gt: 10, $lte: 20} })
+  //   .find({ price: {$in: [10, 15,20] }})
+
+  // ***** Logical operators ******
+  //   const genres = await Genre
+  //   .find()
+  //   .or([{author: "Spielberg"}, {isPublished: true}]) // each object is a filter, return either the ones where the author is Spielberg or the ones that are published
+  //   .or([{price: { $gte: 15 }}, {name: /.*by.*/}]) // price greather than or equal to 15 and the name contains by
+  //   .and([]) // also takes in objetcs as filters - similar to find method
+  //   .limit(10)
+  //   .sort({
+  //     name: 1,
+  //   });
+
+  // **** Filtering with regualr expressions ***
+  //   const genres = await Genre
+  //     // starts with
+  //     .find({ author: /^Speil/ })
+  //     //end with
+  //     .find({ author: /berg$/ })
+  //     //contains
+  //     .find({ author: /.*ber.*/ }); // there are characters before and after, put /i in the end for case insensitive
+
+  // .count() // returns the number of documents
+  // pagination
+  // .skip() - for pagination  ----> .skip((pageNumber -1) * pageSize ).limit(pageSize)
+
+  res.send(genres);
+});
+
+// Updating document in db
+// async function updateCourse(id){
+//     // 1st approach: quesry first, findById(), modify its properites, and save()
+//     const course = Course.findById(id)
+//     if(!course) return;
+//     course.isPublished = true
+//     // // course.set({isPublished: true})// same but diff syntax
+
+//     await course.save()
+//     // 2nd approach: update first - update directly in database and show the updated doc
+//     // check mongodb update operators
+//     const result = await Course.update({_id: id}, {
+//         $set: {
+//             author: "Paul",
+//             isPublished: false
+//         }
+//     });
+// there is also findByIdAndUpdate, we get the document before the update, if we add the object with new: true in the end, we will get the updated one directly
+//     const course = await Course.findByIdAndUpdate(id, {
+//         $set: {
+//             author: "Jack",
+//             isPublished: true
+//         }
+//     }, {new: true});
+// }
+
+
+// Remove document
+// Course.deleteOne({_id: id}) // returns result
+// Course.deleteMany() // delete more than one
+// Course.findByIdAndRemove(id) // if we want to show the course
+
+router.get("/:id", (req, res) => {
+  const movie = genres.find((genre) => genre.id === Number(req.params.id));
+  res.send(movie);
+});
+
+router.post("/", (req, res) => {
+  // const {error} = validateGenre(req.body)
+  // if(error) return res.status(400).send(error.details[0].message)
+  console.log(req.body);
+  if (!req.body || !req.body.name) return res.status(400).send("Bad request");
+  const { name } = req.body;
+  const genre = new Genre({
+    name,
+  });
+
+
+  genre.save();
+  res.send(genre);
+});
+
+module.exports = router;
