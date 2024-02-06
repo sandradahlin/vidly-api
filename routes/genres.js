@@ -4,7 +4,7 @@ const Genre = require("../models/Genre");
 const router = express.Router();
 
 // const genres = [
-//   { id: 1, name: "Action" },
+//   { id: 1, name: "Action" }, 
 //   { id: 2, name: "Drama" },
 //   { id: 3, name: "Comedy" },
 // ];
