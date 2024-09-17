@@ -4,7 +4,7 @@ const Genre = require("../models/Genre");
 const router = express.Router();
 
 // const genres = [
-//   { id: 1, name: "Action" }, 
+//   { id: 1, name: "Action" },
 //   { id: 2, name: "Drama" },
 //   { id: 3, name: "Comedy" },
 // ];
@@ -45,7 +45,7 @@ router.get("/", async (req, res) => {
   //     name: 1,
   //   });
 
-  // **** Filtering with regualr expressions ***
+  // **** Filtering with regular expressions ***
   //   const genres = await Genre
   //     // starts with
   //     .find({ author: /^Speil/ })
@@ -59,16 +59,17 @@ router.get("/", async (req, res) => {
   // .skip() - for pagination  ----> .skip((pageNumber -1) * pageSize ).limit(pageSize)
 });
 
-// Updating document in db
+// ***************** Updating document in db **************
 // async function updateCourse(id){
-//     // 1st approach: quesry first, findById(), modify its properites, and save()
+//     // **************1st approach: quesry first, findById(), modify its properites, and save()
 //     const course = Course.findById(id)
 //     if(!course) return;
 //     course.isPublished = true
 //     // // course.set({isPublished: true})// same but diff syntax
 
 //     await course.save()
-//     // 2nd approach: update first - update directly in database and show the updated doc
+
+//     //*********** */ 2nd approach: update first - update directly in database and show the updated doc
 //     // check mongodb update operators
 //     const result = await Course.update({_id: id}, {
 //         $set: {
@@ -76,6 +77,12 @@ router.get("/", async (req, res) => {
 //             isPublished: false
 //         }
 //     });
+//    to delete the subdocument - we use $unset
+// const result = await Course.update({_id: id}, {
+  //         $unset: {
+  //             author: "",
+  //         }
+  //     });
 // there is also findByIdAndUpdate, we get the document before the update, if we add the object with new: true in the end, we will get the updated one directly
 //     const course = await Course.findByIdAndUpdate(id, {
 //         $set: {
@@ -141,3 +148,77 @@ const validateGenre = (genre) => {
 };
 
 module.exports = router;
+
+// Modelling relationships ****************
+// two approaches
+
+// Using references ( Normalization ) ****************
+// let author = {
+//   name: "Paul",
+// };
+
+// let course = {
+//   author: "id", // --reference to the author
+// };
+
+// model
+// const Course = mongoose.model(
+//   "Course",
+//   new mongoose.Schema({
+//     name: String,
+//     author: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "Author",
+//     },
+//   })
+// );
+
+// Using Embedded Documents ( Denormalization ) *****************
+
+// let course = {
+//   author: {
+//     name: "Paul" // --- embedded
+//   }
+// };
+
+//model
+// const authorSchema = new mongoose.Schema({
+//   name: String,
+//   bio: String,
+// })
+// const Author = mongoose.model('Author', authorSchema)
+// const Course = mongoose.model('Course', new mongoose.Schema({
+// name: String,
+// author: authorSchema
+// }))
+
+// if it's array of subdocuments *****
+// // const Course = mongoose.model('Course', new mongoose.Schema({
+// name: String,
+// authors: [authorSchema]
+// }))
+// new Course({name: 'name', [new Author({name:'author1'}), new Author({name:'authjor2'})]})
+
+// also possible adding by 
+// const course = await Course.findById(id)
+// course.authors.push(new Author({name:"john"}))
+// course.save()
+
+// and removing by
+// const course = await Course.findById(id)
+// const author = course.authors.id(id) // find author
+// author.remove()
+// course.save()
+
+
+// Hybrid approach *************************
+// let author = {
+//   name: "Paul",
+//   // 50 other props
+// };
+// let course = {
+//   author: {
+//     id: "ref",
+//     name: "Paul",
+//   },
+// };
