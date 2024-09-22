@@ -2,8 +2,8 @@
 const mongoose = require("mongoose");
 const _ = require("lodash");
 const express = require("express");
-const config = require("config");
-const jwt = require("jsonwebtoken");
+// const config = require("config");
+// const jwt = require("jsonwebtoken");
 const { User } = require("../models/User");
 const bcrypt = require("bcrypt");
 
@@ -28,7 +28,9 @@ router.post("/", async (req, res) => {
 
   // we return json web tocken
   // add payload and secret private key
-  const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+  // const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+  const token = user.generateAuthToken()
+
   res.send(token);
 });
 module.exports = router;
