@@ -5,6 +5,7 @@ const customersRouter = require("./routes/customers");
 const moviesRouter = require("./routes/movies");
 
 const app = express();
+console.log(module, "***modlue")
 
 mongoose
   .connect("mongodb://localhost/vidly")

@@ -1,6 +1,7 @@
 const express = require("express");
 const Joi = require("joi");
 const Movie = require("../models/Movie");
+const { Genre } = require("../models/Genre");
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -12,10 +13,25 @@ router.post("/", async (req, res) => {
   if (!req.body) {
     return res.status(400).send("Bad request");
   }
-  const { title, numberInStock, dailyRentalRate, genre } = req.body;
+  // const { title, numberInStock, dailyRentalRate, genre } = req.body;
 
-  let newMovie = new Movie({ title, numberInStock, dailyRentalRate, genre });
-  newMovie = newMovie.save();
-  res.send(newMovie);
+  const genre = await Genre.findById(req.body.genreId);
+  if (!genre) return res.status(400).send("Invalida genre.");
+
+  // let newMovie = new Movie({ title, numberInStock, dailyRentalRate, genre });
+
+  let movie = new Movie({
+    title: req.body.title,
+    genre: {
+      _id: genre._id,
+      name: genre.name,
+    },
+    numberInStock: req.body.numberInStock,
+    dailyRentalRate: req.body.dailyRentalRate,
+  });
+
+  movie = await movie.save();
+
+  res.send(movie);
 });
 module.exports = router;
