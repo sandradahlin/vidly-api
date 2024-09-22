@@ -17,5 +17,8 @@ app.use(express.json());
 app.use("/genres", genresRouter);
 app.use("/customers", customersRouter);
 app.use("/movies", moviesRouter);
+app.use("/rentals", moviesRouter);
+app.use("/users", moviesRouter);
+
 
 app.listen(3000, () => "Listening on 3000...");
