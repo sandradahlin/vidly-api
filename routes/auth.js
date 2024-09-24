@@ -33,4 +33,7 @@ router.post("/", async (req, res) => {
 
   res.send(token);
 });
+
+// Logout is on the client
+
 module.exports = router;
