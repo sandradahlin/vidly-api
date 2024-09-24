@@ -2,6 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const Genre = require("../models/Genre");
 const router = express.Router();
+const auth = require("../middleware/auth");
 
 // const genres = [
 //   { id: 1, name: "Action" },
@@ -79,10 +80,10 @@ router.get("/", async (req, res) => {
 //     });
 //    to delete the subdocument - we use $unset
 // const result = await Course.update({_id: id}, {
-  //         $unset: {
-  //             author: "",
-  //         }
-  //     });
+//         $unset: {
+//             author: "",
+//         }
+//     });
 // there is also findByIdAndUpdate, we get the document before the update, if we add the object with new: true in the end, we will get the updated one directly
 //     const course = await Course.findByIdAndUpdate(id, {
 //         $set: {
@@ -119,12 +120,10 @@ router.put("/:id", async (req, res) => {
 });
 
 // should only be called by authenticated user
-router.post("/", async (req, res) => {
-
+router.post("/", auth, async (req, res) => {
   // const token = req.header('x-auth-token')
   // res.status(401)
 
-  
   // const {error} = validateGenre(req.body)
   // if(error) return res.status(400).send(error.details[0].message)
   if (!req.body || !req.body.name) return res.status(400).send("Bad request");
@@ -205,7 +204,7 @@ module.exports = router;
 // }))
 // new Course({name: 'name', [new Author({name:'author1'}), new Author({name:'authjor2'})]})
 
-// also possible adding by 
+// also possible adding by
 // const course = await Course.findById(id)
 // course.authors.push(new Author({name:"john"}))
 // course.save()
@@ -215,7 +214,6 @@ module.exports = router;
 // const author = course.authors.id(id) // find author
 // author.remove()
 // course.save()
-
 
 // Hybrid approach *************************
 // let author = {
