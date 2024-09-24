@@ -3,6 +3,7 @@ const Joi = require("joi");
 const Genre = require("../models/Genre");
 const router = express.Router();
 const auth = require("../middleware/auth");
+const isUserAdmin = require("../middleware/admin");
 
 // const genres = [
 //   { id: 1, name: "Action" },
@@ -136,7 +137,7 @@ router.post("/", auth, async (req, res) => {
   res.send(genre);
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, isUserAdmin],  async (req, res) => {
   const { id } = req.params;
   if (!id) return res.status(400).send("Bad request");
   const genre = await Genre.findByIdAndRemove(id);

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const jwt = require("jwt")
+const jwt = require("jwt");
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -20,11 +20,13 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 50,
   },
+  isAdmin: Boolean,
 });
 
-userSchema.methods.generateAuthToken = function(){
-    const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
-    return token;
-}
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id, isAdmin: this.isAdmin }, config.get("jwtPrivateKey"));
+  return token;
+};
 
 const User = mongoose.model("User", userSchema);
+// set env var set vidly_jwtPrivateKey=mysecurekkey
