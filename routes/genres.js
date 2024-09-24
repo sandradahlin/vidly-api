@@ -118,7 +118,13 @@ router.put("/:id", async (req, res) => {
   res.send(genre);
 });
 
+// should only be called by authenticated user
 router.post("/", async (req, res) => {
+
+  // const token = req.header('x-auth-token')
+  // res.status(401)
+
+  
   // const {error} = validateGenre(req.body)
   // if(error) return res.status(400).send(error.details[0].message)
   if (!req.body || !req.body.name) return res.status(400).send("Bad request");
