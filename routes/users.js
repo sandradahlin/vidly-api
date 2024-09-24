@@ -7,12 +7,18 @@ const express = require("express");
 const { validate } = require("../models/User");
 const { User } = require("../models/User");
 const bcrypt = require("bcrypt");
-
+const auth = require("../middleware/auth");
 const router = express.Router();
 
-router.get("/", async (req, res) => {
-  const users = await User.find();
-  res.send(rentals);
+// router.get("/", async (req, res) => {
+//   const users = await User.find();
+//   res.send(rentals);
+// });
+
+// Get the current user
+router.get("/me", auth, async (req, res) => {
+  const user = await User.fincById(req.user._id).select("-password");
+  res.send(user);
 });
 
 router.post("/", async (req, res) => {
@@ -27,7 +33,7 @@ router.post("/", async (req, res) => {
     email: req.body.email,
     password: req.body.password,
   });
-  
+
   // hash the password
   const salt = await bcrypt.genSalt(10);
   user.password = await bcrypt.hash(user.password, salt);
@@ -35,9 +41,10 @@ router.post("/", async (req, res) => {
   await user.save();
 
   // const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
-  const token = user.generateAuthToken()
+  const token = user.generateAuthToken();
 
-
-  res.header('x-auth-token', token).send(_.pick(user, ["_id", "name", "email"]));
+  res
+    .header("x-auth-token", token)
+    .send(_.pick(user, ["_id", "name", "email"]));
 });
 module.exports = router;
